@@ -1,1 +1,1 @@
-interface IconMap {}
+// interface IconMap {}

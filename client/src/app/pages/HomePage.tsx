@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useCallback, useRef, useState } from "react";
 import Momos from "../../assets/2momos.svg";
 import ShockedMomos from "../../assets/2momos_shock.svg";
@@ -5,14 +6,18 @@ import InteractiveIcon from "../../components/InteractiveIcon";
 import Webcam from "react-webcam";
 
 export default function HomePage(): React.ReactNode {
-  const [name, setName] = useState();
+  const [name, setName] = useState<string>("");
+  const [tempName, setTempName] = useState<string>(name);
 
   const [showWebcam, setShowWebcam] = useState(false);
-
+  const [submitted, setSubmitted] = useState(false);
   const [showShock, setShowShock] = useState(false);
 
-  const handleNameChange = (e) => {
-    setName(e.target.value);
+  const handleNameChange = (e: any) => {
+    e.preventDefault();
+    setName(tempName);
+    setSubmitted(true);
+    setShowWebcam(true);
   };
 
   const videoConstraints = {
@@ -46,23 +51,43 @@ export default function HomePage(): React.ReactNode {
     );
   };
 
-  console.log(showShock);
-
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col my-10 gap-4">
       <div className="flex justify-center items-center flex-col">
         {showWebcam && <WebcamCapture />}
       </div>
+      {!submitted ? (
+        <form onSubmit={handleNameChange}>
+          <div className="flex justify-center items-center flex-col font-mono gap-2">
+            <label>what is your name?</label>
+            <input
+              className="text-center"
+              type="text"
+              value={tempName}
+              onChange={(event) => setTempName(event.target.value)}
+              placeholder={"enter name plz"}
+            />
+            <button type="submit">submit</button>
+          </div>
+        </form>
+      ) : (
+        <div className="flex justify-center items-center">
+          <p className="text-center font-mono">click on us {name} !!</p>
+        </div>
+      )}
 
-      <div
-        className="flex justify-center items-center my-10"
-        onMouseEnter={() => setShowShock(true)}
-        onMouseLeave={() => setShowShock(false)}
-      >
-        <InteractiveIcon
-          icon={Momos}
-          altIcon={showShock ? ShockedMomos : undefined}
-        />
+      <div className="flex justify-center items-center">
+        <div
+          onMouseEnter={() => setShowShock(true)}
+          onMouseLeave={() => setShowShock(false)}
+        >
+          <Link to="https://www.instagram.com/momocrawl/">
+            <InteractiveIcon
+              icon={Momos}
+              altIcon={showShock ? ShockedMomos : undefined}
+            />
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -1,1 +1,20 @@
-{"root":["./src/main.tsx","./src/vite-env.d.ts","./src/app/app.tsx","./src/app/appprovider.tsx","./src/app/approuter.tsx","./src/app/pages/homepage.tsx","./src/app/pages/notfoundpage.tsx","./src/components/interactiveicon.tsx","./src/components/navbar.tsx","./src/types/types.tsx"],"version":"5.6.2"}
+{
+  "root": [
+    "./src/main.tsx",
+    "./src/vite-env.d.ts",
+    "./src/app/app.tsx",
+    "./src/app/appprovider.tsx",
+    "./src/app/approuter.tsx",
+    "./src/app/pages/homepage.tsx",
+    "./src/app/pages/notfoundpage.tsx",
+    "./src/app/pages/photobooth.tsx",
+    "./src/app/pages/temp.tsx",
+    "./src/components/button.tsx",
+    "./src/components/interactiveicon.tsx",
+    "./src/components/menu.tsx",
+    "./src/components/webcam.tsx",
+    "./src/types/types.tsx"
+  ],
+  "errors": true,
+  "version": "5.6.2"
+}

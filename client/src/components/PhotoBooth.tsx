@@ -1,5 +1,8 @@
-import { useRef, useState } from "react";
-import Button from "./Button";
+import { useEffect, useRef, useState } from "react";
+
+interface WebcamProps {
+  reset?: boolean;
+}
 
 async function formatPhotoStrip(images: string[]) {
   const bigImage = await Promise.all(
@@ -25,6 +28,7 @@ async function formatPhotoStrip(images: string[]) {
 
   // draw the image
   const ctx = photostrip.getContext("2d");
+  ctx!.filter = "grayscale(1)";
   // white background
   ctx!.fillStyle = "black";
   ctx!.fillRect(0, 0, canvasWidth, canvasHeight);
@@ -42,27 +46,32 @@ async function formatPhotoStrip(images: string[]) {
   link.click();
 }
 
-export default function Webcam(): React.ReactNode {
-  const videoRef = useRef(null);
+export default function Webcam(props: WebcamProps): React.ReactNode {
+  const { reset = false } = props;
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 
   const [imgArr, setImgArr] = useState<string[]>([]);
 
-  const startWebcam = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-      });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+  useEffect(() => {
+    const startCamera = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+        setMediaStream(stream);
+      } catch (error) {
+        console.error("ERROR", error);
       }
-      setMediaStream(stream);
-    } catch (error) {
-      console.error("ERROR", error);
-    }
-  };
+    };
+
+    startCamera();
+  }, []);
 
   const stopWebcam = () => {
     if (mediaStream) {
@@ -105,25 +114,39 @@ export default function Webcam(): React.ReactNode {
 
   const resetWebcam = () => {
     setImgArr([]);
-    canvasRef.current = null;
+
+    // reset flash animation
+    const el = document.getElementById("flash");
+    el?.classList.remove("webcam-flash");
+    void el?.offsetWidth;
+    el?.classList.add("webcam-flash");
   };
 
-  console.log(canvasRef.current);
+  useEffect(() => {
+    if (reset) resetWebcam();
+  }, [reset]);
+
+  useEffect(() => {
+    if (imgArr.length <= 3) {
+      setTimeout(() => captureImage(), 3000);
+    }
+  }, [imgArr]);
 
   return (
-    <div className="flex gap-4">
-      <Button onClick={startWebcam} label="Start Webcam" />
-      <button onClick={stopWebcam}>Stop Webcam</button>
-      <button onClick={captureImage}>Capture Image</button>
-      <button onClick={() => formatPhotoStrip(imgArr)}>
-        Download PhotoStrip
-      </button>
-      <button onClick={resetWebcam}>Reset</button>
-      {videoRef && <video ref={videoRef} autoPlay />}
-      {canvasRef && <canvas ref={canvasRef} style={{ display: "none" }} />}
-      {imgArr.map((img) => {
-        return <img src={img} alt="Captured" />;
-      })}
+    <div className="flex items-center justify-center my-20 flex-col">
+      {videoRef && (
+        // mirrored image
+        <div className="w-50 scale-x-[-1] ">
+          <video ref={videoRef} autoPlay muted />
+          <div
+            id="flash"
+            className="absolute inset-0 bg-white pointer-events-none webcam-flash"
+          ></div>
+          {canvasRef && <canvas ref={canvasRef} style={{ display: "none" }} />}
+        </div>
+      )}
+      <button onClick={() => resetWebcam()}>reset</button>
+      <button onClick={() => formatPhotoStrip(imgArr)}>download</button>
     </div>
   );
 }

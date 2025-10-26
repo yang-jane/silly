@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { PrinterIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 
 interface WebcamProps {
   reset?: boolean;
@@ -73,15 +74,6 @@ export default function Webcam(props: WebcamProps): React.ReactNode {
     startCamera();
   }, []);
 
-  const stopWebcam = () => {
-    if (mediaStream) {
-      mediaStream.getTracks().forEach((track) => {
-        track.stop();
-      });
-      setMediaStream(null);
-    }
-  };
-
   const captureImage = () => {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
@@ -89,7 +81,6 @@ export default function Webcam(props: WebcamProps): React.ReactNode {
       const context = canvas.getContext("2d");
 
       // set canvas size to video size
-
       if (context && video.videoWidth && video.videoHeight) {
         console.log(
           "I AM IN A;LDSKFJA;SDKL",
@@ -145,8 +136,17 @@ export default function Webcam(props: WebcamProps): React.ReactNode {
           {canvasRef && <canvas ref={canvasRef} style={{ display: "none" }} />}
         </div>
       )}
-      <button onClick={() => resetWebcam()}>reset</button>
-      <button onClick={() => formatPhotoStrip(imgArr)}>download</button>
+      <div className="flex gap-4">
+        <button className="hover:cursor-pointer" onClick={() => resetWebcam()}>
+          <ArrowPathIcon className="w-4" />
+        </button>
+        <button
+          className="hover:cursor-pointer"
+          onClick={() => formatPhotoStrip(imgArr)}
+        >
+          <PrinterIcon className="w-4" />
+        </button>
+      </div>
     </div>
   );
 }

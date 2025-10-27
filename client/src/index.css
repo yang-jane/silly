@@ -2,12 +2,13 @@
 
 @layer theme {
   @keyframes cam-flash {
-    0%,
-    95% {
+    0% {
       opacity: 0;
     }
-    97%,
-    99% {
+    10% {
+      opacity: 0.4;
+    }
+    15% {
       opacity: 1;
     }
     100% {
@@ -17,6 +18,6 @@
 }
 
 @utility webcam-flash {
-  animation: cam-flash 3s 4;
+  animation: cam-flash 0.5s ease-in-out;
   animation-fill-mode: forwards;
 }

@@ -47,11 +47,6 @@ async function formatPhotoStrip(images: string[]): Promise<string> {
   });
 
   return photostrip.toDataURL("image/png", 1.0);
-
-  // const link = document.createElement("a");
-  // link.download = "photostrip.png";
-  // link.href = photostrip.toDataURL("image/png", 1.0);
-  // link.click();
 }
 
 export default function Webcam(props: WebcamProps): React.ReactNode {
@@ -99,8 +94,19 @@ export default function Webcam(props: WebcamProps): React.ReactNode {
     mediaStreamRef.current = null;
   };
 
+  const triggerFlash = () => {
+    const el = document.getElementById("flash");
+    if (el) {
+      el.classList.remove("webcam-flash");
+      // Force reflow to restart the animation
+      void el.offsetWidth;
+      el.classList.add("webcam-flash");
+    }
+  };
+
   const captureImage = () => {
     if (videoRef.current && canvasRef.current) {
+      triggerFlash();
       const video = videoRef.current;
       const canvas = canvasRef.current;
       const context = canvas.getContext("2d");
@@ -146,18 +152,19 @@ export default function Webcam(props: WebcamProps): React.ReactNode {
   }, [reset]);
 
   useEffect(() => {
-    console.log("in the ready imgArr", imgArr, ready, formattedImgStrip);
-    if (ready) {
-      console.log(imgArr.length);
-      if (imgArr.length <= 3) {
-        setTimeout(() => captureImage(), 3000);
-      } else {
-        formatPhotoStrip(imgArr).then((strip) => {
-          setFormattedImgStrip(strip);
-        });
+    if (!ready) return;
 
-        stopCamera();
-      }
+    if (imgArr.length < 4) {
+      const timeout = setTimeout(() => {
+        captureImage();
+      }, 3000);
+      return () => clearTimeout(timeout);
+    } else {
+      formatPhotoStrip(imgArr).then((strip) => {
+        setFormattedImgStrip(strip);
+      });
+
+      stopCamera();
     }
   }, [imgArr, ready, setFormattedImgStrip]);
 

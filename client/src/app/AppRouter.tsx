@@ -2,7 +2,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import HomePage from "./pages/HomePage";
 import { useMemo } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import Temp from "./pages/Temp";
 import BoothLanding from "./pages/BoothLanding";
 import PhotoBooth from "./pages/PhotoBoothPage";
 
@@ -14,13 +13,6 @@ export const createAppRouter = () => {
         return { Component: HomePage };
       },
     },
-
-    {
-      path: "/silly/webcam",
-      lazy: async () => {
-        return { Component: Temp };
-      },
-    },
     {
       path: "/silly/test",
       lazy: async () => {
@@ -28,7 +20,7 @@ export const createAppRouter = () => {
       },
     },
     {
-      path: "/silly/test/photobooth",
+      path: "/silly/photobooth",
       lazy: async () => {
         return { Component: PhotoBooth };
       },
